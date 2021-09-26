@@ -27,6 +27,7 @@ var (
 	primaryEmail = flag.String("p", "", "主邮箱 (默认为空)")
 	group        = flag.String("g", "", "分组 (默认为空)")
 	OU           = flag.String("o", "", "组织名 (默认为空)")
+	domain       = flag.String("d", "", "域名 (默认为空)")
 )
 
 func getDirectoryService(adminEmail string, mod string) (*admin.Service, error) {
@@ -65,7 +66,7 @@ func getDirectoryService(adminEmail string, mod string) (*admin.Service, error) 
 }
 
 func listUser(srv *admin.Service) {
-	r, err := srv.Users.List().Domain("17996.com").OrderBy("email").Do()
+	r, err := srv.Users.List().Domain(*domain).OrderBy("email").Do()
 	if err != nil {
 		log.Panicf("failed to list user in domain: %v", err)
 	}
@@ -100,7 +101,7 @@ func createUser(srv *admin.Service) {
 
 	//通过json unmarshal
 	//创建 admin.user struct
-	primaryEmail := *primaryEmail + "@17996.com"
+	primaryEmail := *primaryEmail + "@" + *domain
 	userJson := fmt.Sprintf(`{"name":{"GivenName":"%s","FamilyName":"%s"},"primaryEmail":"%s","Password":"%s","ChangePasswordAtNextLogin":false,"OrgUnitPath":"%s"}`, *firstName, *lastName, primaryEmail, password, *OU)
 	userByte := []byte(userJson)
 	u := admin.User{}
@@ -120,8 +121,8 @@ func createUser(srv *admin.Service) {
 func update(srv *admin.Service) {
 	//添加用户到组
 	m := admin.Member{}
-	m.Email = *primaryEmail + "@17996.com"
-	group := *group + "@17996.com"
+	m.Email = *primaryEmail + "@" + *domain
+	group := *group + "@" + *domain
 	_, err := srv.Members.Insert(group, &m).Do()
 	if err != nil {
 		log.Panicf("failed to add user %s to group %s: %v", m.Email, group, err)
