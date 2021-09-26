@@ -20,8 +20,8 @@ var credentails string = "../gsuiteServiceAccount.json"
 var password string = "../createRandPwd.sh"
 
 var (
-	method       = flag.String("m", "list", "方法名\nlist 列出域下的所有用户\nupload 创建用户\n")
-	adminEmail   = flag.String("a", "", "管理员账号 (默认为空)")
+	method       = flag.String("m", "list", "方法名\nlist 列出域下的所有用户\ncreate 创建用户\n")
+	adminUser    = flag.String("a", "", "管理员账号 (默认为空)")
 	firstName    = flag.String("f", "", "全名 (默认为空)")
 	lastName     = flag.String("l", "", "姓氏 (默认为空)")
 	primaryEmail = flag.String("p", "", "主邮箱 (默认为空)")
@@ -30,7 +30,7 @@ var (
 	domain       = flag.String("d", "", "域名 (默认为空)")
 )
 
-func getDirectoryService(adminEmail string, mod string) (*admin.Service, error) {
+func getDirectoryService(adminUser string, mod string) (*admin.Service, error) {
 	ctx := context.Background()
 	jsonCredentials, err := ioutil.ReadFile(credentails)
 	if err != nil {
@@ -54,7 +54,7 @@ func getDirectoryService(adminEmail string, mod string) (*admin.Service, error) 
 		log.Panicf("mod %s error ", mod)
 	}
 
-	config.Subject = adminEmail
+	config.Subject = adminUser + "@" + *domain
 	ts := config.TokenSource(ctx)
 
 	srv, err := admin.NewService(ctx, option.WithTokenSource(ts))
@@ -135,12 +135,12 @@ func main() {
 	//解析参数
 	flag.Parse()
 
-	userSrv, err := getDirectoryService(*adminEmail, "user")
+	userSrv, err := getDirectoryService(*adminUser, "user")
 	if err != nil {
 		log.Panicf("failed to get user service: %v", err)
 	}
 
-	groupSrv, err := getDirectoryService(*adminEmail, "group")
+	groupSrv, err := getDirectoryService(*adminUser, "group")
 	if err != nil {
 		log.Panicf("failed to get group service: %v", err)
 	}
