@@ -10,7 +10,7 @@
 1. git clone https://github.com/SidneyCao/goWorkSpaceAPI.git
 2. cd goWorkSpaceAPI
 3. go build 
-4. 编译完成后可以查看一下二进制的使用方法
+4. 编译完成后可以查看一下二进制的使用方法  
 ```
     ./gcpWorkSpaceAPI -h
     Usage of ./gcpWorkSpaceAPI
